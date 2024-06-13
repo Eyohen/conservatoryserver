@@ -9,7 +9,8 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "strictPropertyInitialization": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["node", "express", "bcrypt", "multer", "jsonwebtoken", "morgan", "cors"]
   },
   // "include": ["//*"],
   "exclude": ["node_modules", "dist"]
