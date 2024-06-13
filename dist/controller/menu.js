@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -18,89 +27,99 @@ cloudinary_1.default.v2.config({
 // const storage = multer.memoryStorage();
 // const upload = multer({ storage });
 class MenuController {
-    async create(req, res) {
-        try {
-            const { title, description, imageUrl } = req.body;
-            // Check if image was uploaded
-            let imageurl;
-            if (req.file) {
-                console.log(req.file);
-                // Upload image to Cloudinary
-                const uploadresult = await (0, cloudinary_2.uploadtocloudinary)(req.file.buffer);
-                if (uploadresult.message === "error") {
-                    throw new Error(uploadresult.error.message);
+    create(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { title, description, imageUrl } = req.body;
+                // Check if image was uploaded
+                let imageurl;
+                if (req.file) {
+                    console.log(req.file);
+                    // Upload image to Cloudinary
+                    const uploadresult = yield (0, cloudinary_2.uploadtocloudinary)(req.file.buffer);
+                    if (uploadresult.message === "error") {
+                        throw new Error(uploadresult.error.message);
+                    }
+                    imageurl = uploadresult.url;
                 }
-                imageurl = uploadresult.url;
+                // create menu record in the database
+                const record = yield Menu.create(Object.assign(Object.assign({}, req.body), { imageUrl: imageurl }));
+                return res.status(200).json({ record, msg: "Successfully create Menu" });
             }
-            // create menu record in the database
-            const record = await Menu.create({ ...req.body, imageUrl: imageurl });
-            return res.status(200).json({ record, msg: "Successfully create Menu" });
-        }
-        catch (error) {
-            console.log("henry", error);
-            return res.status(500).json({ msg: "failed to create", error });
-        }
-    }
-    async readPagination(req, res) {
-        try {
-            //   const limit = (req.query.limit as number | undefined) || 10;
-            //   const offset = req.query.offset as number | undefined;
-            //   const records = await Menu.findAll({ where: {}, limit, offset });
-            const records = await Menu.findAll({
-                include: [{ model: SubMenu, as: 'subMenu' }]
-                // include: db.SubMenu
-            });
-            return res.json(records);
-        }
-        catch (e) {
-            return res.json({ msg: "failed to read", status: 500, });
-        }
-    }
-    async readByID(req, res) {
-        try {
-            const { id } = req.params;
-            const record = await Menu.findOne({ where: { id },
-                include: [{ model: SubMenu, as: 'subMenu' }]
-            });
-            return res.json(record);
-        }
-        catch (e) {
-            return res.json({ msg: "failed to read", status: 500, route: "/read/:id" });
-        }
-    }
-    async update(req, res) {
-        try {
-            // const { title, content } = req.body;
-            const updated = await Menu.update({ ...req.body }, { where: { id: req.params.id } });
-            if (updated) {
-                const updatedMenu = await Menu.findByPk(req.params.id);
-                res.status(200).json(updatedMenu);
+            catch (error) {
+                console.log("henry", error);
+                return res.status(500).json({ msg: "failed to create", error });
             }
-            else {
-                res.status(404).json({ message: "Menu not found" });
-            }
-        }
-        catch (error) {
-            res.status(500).json({ message: "Error updating the Menu", error });
-        }
+        });
     }
-    async delete(req, res) {
-        try {
-            const { id } = req.params;
-            const record = await Menu.findOne({ where: { id } });
-            if (!record) {
-                return res.json({ msg: "Can not find existing record" });
+    readPagination(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                //   const limit = (req.query.limit as number | undefined) || 10;
+                //   const offset = req.query.offset as number | undefined;
+                //   const records = await Menu.findAll({ where: {}, limit, offset });
+                const records = yield Menu.findAll({
+                    include: [{ model: SubMenu, as: 'subMenu' }]
+                    // include: db.SubMenu
+                });
+                return res.json(records);
             }
-            const deletedRecord = await record.destroy();
-            return res.json({ record: deletedRecord });
-        }
-        catch (e) {
-            return res.json({
-                msg: "fail to read",
-                status: 500,
-                route: "/delete/:id",
-            });
-        }
+            catch (e) {
+                return res.json({ msg: "failed to read", status: 500, });
+            }
+        });
+    }
+    readByID(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id } = req.params;
+                const record = yield Menu.findOne({ where: { id },
+                    include: [{ model: SubMenu, as: 'subMenu' }]
+                });
+                return res.json(record);
+            }
+            catch (e) {
+                return res.json({ msg: "failed to read", status: 500, route: "/read/:id" });
+            }
+        });
+    }
+    update(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // const { title, content } = req.body;
+                const updated = yield Menu.update(Object.assign({}, req.body), { where: { id: req.params.id } });
+                if (updated) {
+                    const updatedMenu = yield Menu.findByPk(req.params.id);
+                    res.status(200).json(updatedMenu);
+                }
+                else {
+                    res.status(404).json({ message: "Menu not found" });
+                }
+            }
+            catch (error) {
+                res.status(500).json({ message: "Error updating the Menu", error });
+            }
+        });
+    }
+    delete(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id } = req.params;
+                const record = yield Menu.findOne({ where: { id } });
+                if (!record) {
+                    return res.json({ msg: "Can not find existing record" });
+                }
+                const deletedRecord = yield record.destroy();
+                return res.json({ record: deletedRecord });
+            }
+            catch (e) {
+                return res.json({
+                    msg: "fail to read",
+                    status: 500,
+                    route: "/delete/:id",
+                });
+            }
+        });
     }
 }
 exports.default = new MenuController();

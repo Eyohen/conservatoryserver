@@ -8,17 +8,6 @@ var RoleType;
 })(RoleType || (RoleType = {}));
 module.exports = (sequelize, DataTypes) => {
     class User extends sequelize_1.Model {
-        /**
-         * Helper method for defining associations.
-         * This method is not a part of Sequelize lifecycle.
-         * The `models/index` file will call this method automatically.
-         */
-        id;
-        firstName;
-        lastName;
-        email;
-        role;
-        password;
         static associate(models) {
             // define association here
             User.belongsToMany(models.Project, {
