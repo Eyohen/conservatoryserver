@@ -57,7 +57,7 @@ if (process.env.NODE_ENV === 'development') {
 
 db.sequelize.sync().then(() => {
     console.log('All models were synchronized successfully')
-    app.listen(port, () => {
+    app.listen(port as unknown as number, "0.0.0.0",() => {
         console.log(`App listening on port ${port}`)
-    })
+    });
 })
