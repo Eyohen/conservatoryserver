@@ -11,7 +11,7 @@
     "dev": "nodemon index.ts",
     "build": "tsc --project tsconfig.json",
     "lint": "tslint -c tslint.json -p tsconfig.json --fix",
-    "debug": "node ts-node-dev --respawn --transpile-only --project tsconfig.json ./index.ts"
+    "debug": "ts-node-dev --respawn --transpile-only --project tsconfig.json ./index.ts"
   },
   "keywords": [],
   "author": "",
@@ -50,6 +50,5 @@
     "@types/multer": "^1.4.11",
     "@types/node": "^20.12.7",
     "@types/uuid": "^9.0.8"
-   
   }
 }
