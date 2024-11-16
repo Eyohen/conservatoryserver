@@ -41,6 +41,10 @@ Booking.belongsTo(models.User, {
       type: DataTypes.STRING,
       allowNull: true
     },
+    giftname: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
     email: {
         type: DataTypes.STRING,
         allowNull: false
@@ -77,6 +81,11 @@ Booking.belongsTo(models.User, {
     crockery: {
         type: DataTypes.STRING,
         allowNull: true
+      },
+    attended: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue:'unattended'
       },
     userId: {
       type: DataTypes.UUID,

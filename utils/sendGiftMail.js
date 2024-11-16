@@ -4,16 +4,19 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-module.exports = async (from, email, giftemail, subject, text, date, time, menu, crockery, tea, coffee, iceTea) => {
+module.exports = async (from, giftemail, subject, text, giftname, date, time, menu, crockery, tea, coffee, iceTea) => {
     const transporter = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
-        service: process.env.SERVICE,
+        // service: process.env.SERVICE,
         port: Number(process.env.EMAIL_PORT),
         secure: false,
         auth: {
             user: process.env.USER,
             pass: process.env.PASS,
         },
+        tls: {
+            rejectUnauthorized: false // This can help if there are SSL certificate issues
+          }
     });
 
     const mailOptions = (recipient) => ({
@@ -68,17 +71,21 @@ module.exports = async (from, email, giftemail, subject, text, date, time, menu,
 </head>
 <body>
     <div class="container">
+            <p style="font-size: 20px; font-weight: 600;">The Conservatory at IroLagos</p>
         <div class="header">
             <h1>Order Confirmation</h1>
         </div>
         <div class="content">
-            <p>Congratulations! You’ve been gifted an afternoon tea experience at Iro Lagos Conservatory! Below are the details of your appointment.
-:</p>
+             <p>Hi <strong>${giftname}</strong>,</p>
+           <p>We are overjoyed to inform you that you've been gifted a special experience at the magical Iro
+ Lagos Conservatory! This enchanting gift from [Giver's Name] promises to be a memorable and
+ delightful occasion.</p>
+
             <ul>
                <li><strong>Date:</strong> ${new Date(date).toDateString()}</li>
                 <li><strong>Time:</strong> ${time}</li>
-                <li><strong>Location:</strong> 7/12 Rumens roads, Ikoyi.</li>
-                <li><strong>Email:</strong> ${email}</li>
+                <li><strong>Location:</strong>IroLagos, 7/12 Rumens roads, Ikoyi.</li>
+                <li><strong>Email:</strong> ${giftemail}</li>
                 <li><strong>Menu:</strong> ${menu}</li>
                 <li><strong>Crockery:</strong> ${crockery}</li>
                 <li><strong>Tea:</strong> ${tea ? tea : "none"}</li>
@@ -106,13 +113,9 @@ observe the following etiquette guidelines during your visit:</p>
     });
 
     try {
-        await transporter.sendMail(mailOptions(email));
-        console.log("Email sent successfully to", email);
-
-        if (giftemail) {
             await transporter.sendMail(mailOptions(giftemail));
             console.log("Email sent successfully to", giftemail);
-        }
+        
     } catch (error) {
         console.log("Email not sent!");
         console.log(error);

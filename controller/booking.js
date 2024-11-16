@@ -3,30 +3,108 @@ const { v4: uuidv4 } = require("uuid");
 const bcrypt = require('bcrypt');
 const db = require("../models");
 const {Booking, User} = db;
-const sendEmail = require('../utils/sendEmail.js')
+const sendEmail = require('../utils/sendEmail.js');
+const sendGiftMail = require("../utils/sendGiftMail.js");
 
 
 
-	const create = async (req, res) => {
+	// const create = async (req, res) => {
 		
-		const {email, giftemail, tea, time, price, coffee, iceTea, menu, date, crockery, userId } = req.body;
+	// 	const {email, giftemail, tea, time, price, coffee, iceTea, menu, date, crockery, userId, giftname } = req.body;
 
+	// 	try {
+			
+	// 	let user = await Booking.findOne({email:req.body.email});
+
+	// 		const record = await Booking.create({...req.body, email:req.body.email, giftemail, giftname, time, date, menu, crockery, tea, coffee, iceTea, userId});
+
+	// 		await sendEmail( "henry.eyo2@gmail.com", record.email, record.giftemail, "Order Confirmation",
+	// 			"Order Confirmed!", record.date, record.time, record.menu, record.crockery, record.tea, record.coffee, record.iceTea);
+
+			
+	// 		await sendGiftMail( "henry.eyo2@gmail.com", record.email, record.giftemail, "Order Confirmation",
+	// 				"Order Confirmed!", record.giftname, record.date, record.time, record.menu, record.crockery, record.tea, record.coffee, record.iceTea);
+
+	// 		return res.status(200).json({ record, msg: "Successfully create Booking" });
+
+	// 	} catch (error) {
+	// 		console.log("henry",error)
+	// 		return res.status(500).json({ msg: "error creating booking", error});
+	// 	}
+	// }
+	const create = async (req, res) => {
+		const {
+			email,
+			giftemail,
+			tea,
+			time,
+			price,
+			coffee,
+			iceTea,
+			menu,
+			date,
+			crockery,
+			userId,
+			giftname
+		} = req.body;
+	
 		try {
-			
-		let user = await Booking.findOne({email:req.body.email});
-
-			const record = await Booking.create({...req.body, email:req.body.email, giftemail, time, date, menu, crockery, tea, coffee, iceTea, userId});
-
-			await sendEmail( "henry.eyo2@gmail.com", record.email, record.giftemail, "Order Confirmation",
-				"Order Confirmed!", record.date, record.time, record.menu, record.crockery, record.tea, record.coffee, record.iceTea);
-
-			
-
+			// Check if user exists
+			let user = await Booking.findOne({ email: req.body.email });
+	
+			// Create booking record
+			const record = await Booking.create({
+				...req.body,
+				email: req.body.email,
+				giftemail,
+				giftname,
+				time,
+				date,
+				menu,
+				crockery,
+				tea,
+				coffee,
+				iceTea,
+				userId
+			});
+	
+			// Always send the primary email
+			await sendEmail(
+				"theconservatoryatirolagos@zohomail.com",
+				record.email,
+				"Order Confirmation",
+				"Order Confirmed!",
+				record.date,
+				record.time,
+				record.menu,
+				record.crockery,
+				record.tea,
+				record.coffee,
+				record.iceTea
+			);
+	
+			// Send gift email only if both giftemail and giftname are present
+			if (record.giftemail && record.giftname) {
+				await sendGiftMail(
+					"theconservatoryatirolagos@zohomail.com",
+					record.giftemail,
+					"Order Confirmation",
+					"Order Confirmed!",
+					record.giftname,
+					record.date,
+					record.time,
+					record.menu,
+					record.crockery,
+					record.tea,
+					record.coffee,
+					record.iceTea
+				);
+			}
+	
 			return res.status(200).json({ record, msg: "Successfully create Booking" });
-
 		} catch (error) {
-			console.log("henry",error)
-			return res.status(500).json({ msg: "error creating booking", error});
+			console.log("henry", error);
+			return res.status(500).json({ msg: "error creating booking", error });
 		}
 	}
 
