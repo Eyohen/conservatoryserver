@@ -87,6 +87,10 @@ Booking.belongsTo(models.User, {
         allowNull: false,
         defaultValue:'unattended'
       },
+    attendedBy: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
     userId: {
       type: DataTypes.UUID,
       allowNull: false,
